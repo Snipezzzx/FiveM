@@ -1,0 +1,325 @@
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+		<style>
+			#vehicleShop {
+				display: none;
+				font-family: sans-serif;
+				height: 700px;
+				background: rgb(60, 60, 60);
+				color: white;
+				width: 800px;
+				position: absolute;
+			    top: 50%;
+			    left: 50%;
+			    margin-top: -350px;
+			    margin-left: -400px;
+			    padding-bottom: 20px;
+			}
+
+			::-webkit-scrollbar { 
+			    display: none;
+			}
+
+			.topbar {
+				height: 50px;
+				font-weight: bold;
+				font-size: 26px;
+				background: rgb(40, 40, 40);
+			}
+
+			.body {
+				height: 650px;
+				overflow-y: scroll;
+			}
+
+			.topbar p {
+				top: 0;
+				margin-top: 0;
+				padding: 10px;
+				display: inline-block;
+			}
+
+			#shop_close {
+				display: inline-block;
+				float: right;
+				padding: 5px;
+				padding-right: 10px;
+				color: rgb(255,0,0);
+			}
+
+			.category {
+				margin-top: 5px;
+				margin-left: 5px;
+				width: 790px;
+				height: 40px;
+				border: none;
+				background: rgb(151,66,66);
+				color: white;
+				font-size: 19px;
+				text-align: left;
+			}
+
+			.vehicle {
+				margin-top: 5px;
+				margin-left: 5px;
+				width: 790px;
+				height: 40px;
+				border: none;
+				background: rgb(151,66,66);
+				color: white;
+				font-size: 19px;
+				text-align: left;		
+			}
+
+			.category b, .vehicle b {
+				float: right;
+			}
+
+			#shop_compacts {
+				display: none;
+			}
+		</style>
+
+		<script>
+			var owned = {}
+			$(function(){
+				$(".body").css('display', 'none')
+				$("#main").css('display', 'block')
+				$(".category").click(function(){
+					$("#main").css('display', 'none')
+					$(".return").html("Vehicle Garage (" + $(this).attr('id') + ")")
+					$("#shop_" + $(this).attr('id')).css('display', 'block')
+
+					$(this).blur()
+				})
+
+				$(".return").click(function(){
+					$(".return").html("Vehicle Garage")
+					$(".body").css('display', 'none')
+					$("#main").css('display', 'block')
+				})
+
+				$(".vehicle").click(function(){
+					$.post('http://es_garages/select', JSON.stringify({vehicle: $(this).attr('id'), owned: (owned[$(this).attr('id')] || false)}));
+
+					$(this).blur()
+				})
+
+				window.addEventListener('message', function(event) {
+					if(event.data.type == "garageSwitch"){
+						$("#vehicleShop").css('display', event.data.enable ? "block" : "none")
+		    		} else if (event.data.type == "own"){
+		    			$("#" + event.data.vehicle).css('background', 'green')
+		    			$("#" + event.data.vehicle).find('b').text('')
+
+		    			owned[event.data.vehicle] = true
+		    		} else if (event.data.type == "owned"){
+		    			event.data.vehicles = JSON.parse(event.data.vehicles)
+		    			for(var i in event.data.vehicles){
+		    				owned[event.data.vehicles[i]] = true
+			    			$("#" + event.data.vehicles[i]).css('background', 'green')
+			    			$("#" + event.data.vehicles[i]).find('b').text('')
+			    		}
+		    		}
+				})
+
+				$("#shop_close").click(function(){
+					$.post('http://es_garages/close', JSON.stringify({}));
+				})
+			})
+		</script>
+	</head>
+	<body>
+
+		<div id="vehicleShop">
+			<div class='topbar'>
+				<p class='return'>Vehicle Garage</p>
+				<div id="shop_close">&#10060;</div>
+			</div>
+			<div id="main" class='body'>
+				<button id="compacts" class="category">Compacts <b>7</b></button>
+				<button id="coupes" class="category">Coupes <b>14</b></button>
+				<button id="sports" class="category">Sports <b>30</b></button>
+				<button id="sports_classics" class="category">Sports Classics <b>8</b></button>
+				<button id="super" class="category">Super <b>19</b></button>
+				<button id="muscle" class="category">Muscle <b>15</b></button>
+				<button id="offroad" class="category">Off-Road <b>9</b></button>
+				<button id="suvs" class="category">SUVs <b>9</b></button>
+				<button id="vans" class="category">VANs <b>9</b></button>
+				<button id="sedans" class="category">Sedans <b>18</b></button>
+			</div>
+
+			<div id="shop_compacts" class='body'>
+				<button id="blista" class="vehicle">Blista <b>$4200</b></button>
+				<button id="brioso" class="vehicle">Brioso R/A <b>$15500</b></button>
+				<button id="dilettante" class="vehicle">Dilettante <b>$2500</b></button>
+				<button id="issi2" class="vehicle">Issi <b>$2500</b></button>
+				<button id="panto" class="vehicle">Panto <b>$8500</b></button>
+				<button id="prairie" class="vehicle">Prairie <b>$3000</b></button>
+				<button id="rhapsody" class="vehicle">Rhapsody <b>$14000</b></button>
+			</div>	
+			
+			<div id="shop_coupes" class='body'>
+				<button id="cogcabrio" class="vehicle">Cognoscenti Cabrio <b>$18500</b></button>
+				<button id="exemplar" class="vehicle">Exemplar <b>$20500</b></button>
+				<button id="f620" class="vehicle">F620 <b>$8000</b></button>
+				<button id="felon" class="vehicle">Felon <b>$9000</b></button>
+				<button id="felon2" class="vehicle">Felon GT <b>$9500</b></button>
+				<button id="jackal" class="vehicle">Jackal <b>$6000</b></button>
+				<button id="oracle" class="vehicle">Oracle <b>$8000</b></button>
+				<button id="oracle2" class="vehicle">Oracle XS <b>$8200</b></button>
+				<button id="sentinel" class="vehicle">Sentinel <b>$9500</b></button>
+				<button id="sentinel2" class="vehicle">Sentinel XS <b>$10000</b></button>
+				<button id="windsor" class="vehicle">Windsor <b>$84500</b></button>
+				<button id="windsor2" class="vehicle">Windsor Drop <b>$88000</b></button>
+				<button id="zion" class="vehicle">Zion <b>$6000</b></button>
+				<button id="zion2" class="vehicle">Zion Cabrio <b>$6500</b></button>
+			</div>	
+
+			<div id="shop_sports" class='body'>
+				<button id="ninef" class="vehicle">9F <b>$12000</b></button>
+				<button id="ninef2" class="vehicle">9F Cabrio <b>$13000</b></button>
+				<button id="alpha" class="vehicle">Alpha <b>$15000</b></button>
+				<button id="banshee" class="vehicle">Banshee <b>$12600</b></button>
+				<button id="bestiagts" class="vehicle">Bestia GTS <b>$61000</b></button>
+				<button id="blista" class="vehicle">Blista Compact <b>$4200</b></button>
+				<button id="buffalo" class="vehicle">Buffalo <b>$3500</b></button>
+				<button id="buffalo2" class="vehicle">Buffalo S <b>$9600</b></button>
+				<button id="carbonizzare" class="vehicle">Carbonizzare <b>$19500</b></button>
+				<button id="comet2" class="vehicle">Comet <b>$10000</b></button>
+				<button id="coquette" class="vehicle">Coquette <b>$13800</b></button>
+				<button id="tampa2" class="vehicle">Drift Tampa <b>$90000</b></button>
+				<button id="feltzer2" class="vehicle">Feltzer <b>$13000</b></button>
+				<button id="furoregt" class="vehicle">Furore GT <b>$44800</b></button>
+				<button id="fusilade" class="vehicle">Fusilade <b>$3600</b></button>
+				<button id="jester" class="vehicle">Jester <b>$24000</b></button>
+				<button id="jester2" class="vehicle">Jester (Racecar) <b>$35000</b></button>
+				<button id="kuruma" class="vehicle">Kuruma <b>$12600</b></button>
+				<button id="lynx" class="vehicle">Lynx <b>$173500</b></button>
+				<button id="massacro" class="vehicle">Massacro <b>$27500</b></button>
+				<button id="massacro2" class="vehicle">Massacro (Racecar) <b>$38500</b></button>
+				<button id="omnis" class="vehicle">Omnis <b>$70100</b></button>
+				<button id="penumbra" class="vehicle">Penumbra <b>$2400</b></button>
+				<button id="rapidgt" class="vehicle">Rapid GT <b>$14000</b></button>
+				<button id="rapidgt2" class="vehicle">Rapid GT Convertible <b>$15000</b></button>
+				<button id="schafter3" class="vehicle">Schafter V12 <b>$14000</b></button>
+				<button id="sultan" class="vehicle">Sultan <b>$1200</b></button>
+				<button id="surano" class="vehicle">Surano <b>$11000</b></button>
+				<button id="tropos" class="vehicle">Tropos <b>$81600</b></button>
+				<button id="verlierer2" class="vehicle">Verkierer <b>$69500</b></button>
+			</div>
+
+			<div id="shop_sports_classics" class='body'>
+				<button id="casco" class="vehicle">Casco <b>$68000</b></button>
+				<button id="coquette2" class="vehicle">Coquette Classic <b>$66500</b></button>
+				<button id="jb700" class="vehicle">JB 700 <b>$35000</b></button>
+				<button id="pigalle" class="vehicle">Pigalle <b>$40000</b></button>
+				<button id="stinger" class="vehicle">Stinger <b>$85000</b></button>
+				<button id="stingergt" class="vehicle">Stinger GT <b>$97500</b></button>
+				<button id="ztype" class="vehicle">Z-Type <b>$95000</b></button>
+			</div>
+
+			<div id="shop_super" class='body'>
+				<button id="adder" class="vehicle">Adder <b>$100000</b></button>
+				<button id="banshee2" class="vehicle">Banshee 900R <b>$56500</b></button>
+				<button id="bullet" class="vehicle">Bullet <b>$15500</b></button>
+				<button id="cheetah" class="vehicle">Cheetah <b>$65000</b></button>
+				<button id="entityxf" class="vehicle">Entity XF <b>$79500</b></button>
+				<button id="sheava" class="vehicle">ETR1 <b>$19950</b></button>
+				<button id="fmj" class="vehicle">FMJ <b>$175000</b></button>
+				<button id="infernus" class="vehicle">Infernus <b>$44000</b></button>
+				<button id="osiris" class="vehicle">Osiris <b>$195000</b></button>
+				<button id="le7b" class="vehicle">RE-7B <b>$247500</b></button>
+				<button id="reaper" class="vehicle">Reaper <b>$159500</b></button>
+				<button id="sultanrs" class="vehicle">Sultan RS <b>$79500</b></button>
+				<button id="t20" class="vehicle">T20 <b>$220000</b></button>
+				<button id="turismor" class="vehicle">Turismo R <b>$50000</b></button>
+				<button id="tyrus" class="vehicle">Tyrus <b>$255000</b></button>
+				<button id="vacca" class="vehicle">Vacca <b>$24000</b></button>
+				<button id="voltic" class="vehicle">Voltic <b>$15000</b></button>
+				<button id="prototipo" class="vehicle">X80 Proto <b>$270000</b></button>
+				<button id="zentorno" class="vehicle">Zentorno <b>$72500</b></button>
+			</div>
+
+			<div id="shop_muscle" class='body'>
+				<button id="blade" class="vehicle">Blade <b>$16000</b></button>
+				<button id="buccaneer" class="vehicle">Buccaneer <b>$2900</b></button>
+				<button id="chino" class="vehicle">Chino <b>$22500</b></button>
+				<button id="coquette3" class="vehicle">Coquette BlackFin <b>$69500</b></button>
+				<button id="dominator" class="vehicle">Dominator <b>$3500</b></button>
+				<button id="dukes" class="vehicle">Dukes <b>$6200</b></button>
+				<button id="gauntlet" class="vehicle">Gauntlet <b>$3200</b></button>
+				<button id="hotknife" class="vehicle">Hotknife <b>$9000</b></button>
+				<button id="faction" class="vehicle">Faction <b>$3600</b></button>
+				<button id="nightshade" class="vehicle">Nightshade <b>$58500</b></button>
+				<button id="picador" class="vehicle">Picador <b>$900</b></button>
+				<button id="sabregt" class="vehicle">Sabre Turbo <b>$1500</b></button>
+				<button id="tampa" class="vehicle">Tampa <b>$37500</b></button>
+				<button id="virgo" class="vehicle">Virgo <b>$19500</b></button>
+				<button id="vigero" class="vehicle">Vigero <b>$2100</b></button>
+			</div>
+
+			<div id="shop_offroad" class='body'>
+				<button id="bifta" class="vehicle">Bifta <b>$7500</b></button>
+				<button id="blazer" class="vehicle">Blazer <b>$800</b></button>
+				<button id="brawler" class="vehicle">Brawler <b>$71500</b></button>
+				<button id="dubsta3" class="vehicle">Bubsta 6x6 <b>$24900</b></button>
+				<button id="dune" class="vehicle">Dune <b>$2000</b></button>
+				<button id="rebel2" class="vehicle">Rebel <b>$2200</b></button>
+				<button id="sandking" class="vehicle">Sandking <b>$3800</b></button>
+				<button id="monster" class="vehicle">The Liberator <b>$55000</b></button>
+				<button id="trophytruck" class="vehicle">Trophy Truck <b>$55000</b></button>
+			</div>
+
+			<div id="shop_suvs" class='body'>
+				<button id="baller" class="vehicle">Baller <b>$9000</b></button>
+				<button id="cavalcade" class="vehicle">Cavalcade <b>$6000</b></button>
+				<button id="granger" class="vehicle">Grabger <b>$3500</b></button>
+				<button id="huntley" class="vehicle">Huntley S <b>$19500</b></button>
+				<button id="landstalker" class="vehicle">Landstalker <b>$5800</b></button>
+				<button id="radi" class="vehicle">Radius <b>$3200</b></button>
+				<button id="rocoto" class="vehicle">Rocoto <b>$8500</b></button>
+				<button id="seminole" class="vehicle">Seminole <b>$3000</b></button>
+				<button id="xls" class="vehicle">XLS <b>$25300</b></button>
+			</div>
+
+			<div id="shop_vans" class='body'>
+				<button id="bison" class="vehicle">Bison <b>$3000</b></button>
+				<button id="bobcatxl" class="vehicle">Bobcat XL <b>$2300</b></button>
+				<button id="gburrito" class="vehicle">Gang Burrito <b>$6500</b></button>
+				<button id="journey" class="vehicle">Journey <b>$1500</b></button>
+				<button id="minivan" class="vehicle">Minivan <b>$3000</b></button>
+				<button id="paradise" class="vehicle">Paradise <b>$2500</b></button>
+				<button id="rumpo" class="vehicle">Rumpo <b>$1300</b></button>
+				<button id="surfer" class="vehicle">Surfer <b>$1100</b></button>
+				<button id="youga" class="vehicle">Youga <b>$1600</b></button>
+			</div>
+
+			<div id="shop_sedans" class='body'>
+				<button id="asea" class="vehicle">Asea <b>$1200</b></button>
+				<button id="fugitive" class="vehicle">Fugitive <b>$2400</b></button>
+				<button id="glendale" class="vehicle">Glendale <b>$2000</b></button>
+				<button id="ingot" class="vehicle">Ingot <b>$900</b></button>
+				<button id="intruder" class="vehicle">Intruder <b>$1600</b></button>
+				<button id="premier" class="vehicle">Premier <b>$2000</b></button>
+				<button id="primo" class="vehicle">Primo <b>$900</b></button>
+				<button id="primo2" class="vehicle">Primo Custom <b>$950</b></button>
+				<button id="regina" class="vehicle">Regina <b>$800</b></button>
+				<button id="schafter2" class="vehicle">Schafter <b>$6500</b></button>
+				<button id="stanier" class="vehicle">Stanier <b>$1000</b></button>
+				<button id="stratum" class="vehicle">Stratum <b>$1000</b></button>
+				<button id="stretch" class="vehicle">Stretch <b>$3000</b></button>
+				<button id="superd" class="vehicle">Super Diamond <b>$25000</b></button>
+				<button id="surge" class="vehicle">Surge <b>$3800</b></button>
+				<button id="tailgater" class="vehicle">Tailgater <b>$5500</b></button>
+				<button id="warrener" class="vehicle">Warrener <b>$12000</b></button>
+				<button id="washington" class="vehicle">Washington <b>$1500</b></button>
+			</div>
+		</div>
+
+		<script>
+		</script>
+	</body>
+</html>
